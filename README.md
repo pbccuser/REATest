@@ -31,20 +31,11 @@ and a mature open-source stack rather than on any single vendor's application.
 - Markup is flattened into the PDF on download (and before structural
   edits, so it stays attached to the right pages)
 
-**Phase 3 — measurement & takeoff** (Bluebeam-style)
-- Calibrate each page to scale from a known distance
-- Length, area, and count measurements with live on-sheet values
-- Takeoff panel: running totals (length/area by unit, counts by label)
-- Export takeoff data to CSV (opens in Excel)
-- Measurements bake into the PDF on download
-
 ## Roadmap
 
 - **Phase 2 (done)** — annotations: highlight, pen, rectangle, text notes.
-- **Phase 3 (done)** — measurement & takeoff: calibrate, length, area, count, CSV export.
-- **Next** — markups list export, tool chest (saved markups), document compare,
-  form filling, OCR.
-- **Later** — OCR (Tesseract.js), redaction, digital signatures, PDF/A,
+- **Next** — drag-to-reorder pages, form filling, insert image.
+- **Phase 3** — OCR (Tesseract.js), redaction, digital signatures, PDF/A,
   document compare, split-by-range UI.
 - **Fidelity track** — optional MuPDF/PDFium WASM backend for Acrobat-grade
   rendering and conversion.

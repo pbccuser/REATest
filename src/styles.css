@@ -81,30 +81,3 @@ body {
 .swatch { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; padding: 0; }
 .swatch.active { border-color: #fff; box-shadow: 0 0 0 2px var(--accent); }
 .swatch.custom { width: 24px; height: 24px; border-radius: 6px; background: none; }
-
-/* --- Phase 3: measurement & takeoff --- */
-.measure-layer { position: absolute; left: 0; top: 0; touch-action: none; outline: none; }
-.measure-label { font-family: system-ui, sans-serif; font-weight: 600; }
-
-.measure-panel {
-  width: 250px; flex-shrink: 0; background: var(--panel); border-left: 1px solid var(--line);
-  display: flex; flex-direction: column; overflow-y: auto; font-size: 13px;
-}
-.mp-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--line); }
-.mp-section { padding: 10px 12px; border-bottom: 1px solid var(--line); }
-.mp-row-between { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.mp-scale { color: var(--muted); margin-top: 6px; font-size: 12px; }
-.mp-label { display: flex; flex-direction: column; gap: 5px; color: var(--muted); }
-.mp-label input { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; color: var(--text); padding: 6px 8px; }
-.mp-totals div { margin-top: 4px; }
-.mp-empty { color: var(--muted); }
-.mp-list { flex: 1; overflow-y: auto; }
-.mp-item { display: flex; align-items: center; gap: 7px; padding: 7px 12px; border-bottom: 1px solid var(--panel-2); }
-.mp-swatch { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; }
-.mp-type { text-transform: capitalize; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mp-val { color: var(--text); font-variant-numeric: tabular-nums; }
-.mp-pg { color: var(--muted); font-size: 11px; }
-.mp-del { background: none; border: none; cursor: pointer; opacity: .6; }
-.mp-del:hover { opacity: 1; }
-.btn.full { width: 100%; justify-content: center; }
-.btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
