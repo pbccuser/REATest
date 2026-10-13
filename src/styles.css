@@ -81,3 +81,10 @@ body {
 .swatch { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; padding: 0; }
 .swatch.active { border-color: #fff; box-shadow: 0 0 0 2px var(--accent); }
 .swatch.custom { width: 24px; height: 24px; border-radius: 6px; background: none; }
+
+/* --- combined feature panels --- */
+.side-panel {
+  width: 260px; flex-shrink: 0; background: var(--panel); border-left: 1px solid var(--line);
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.side-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--line); }

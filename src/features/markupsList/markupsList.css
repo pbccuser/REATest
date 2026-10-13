@@ -1,0 +1,101 @@
+.markups-panel {
+  width: 260px;
+  flex: 0 0 260px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  color: var(--text);
+}
+
+.markups-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.markups-title {
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+
+.markups-close {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.markups-close:hover { color: var(--text); }
+
+.markups-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+
+.markups-empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 24px 12px;
+  font-size: 13px;
+}
+
+.markups-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.markups-table th {
+  text-align: left;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  padding: 4px 8px;
+  position: sticky;
+  top: 0;
+  background: var(--panel);
+}
+.markups-table td {
+  padding: 5px 8px;
+  border-top: 1px solid var(--line);
+  vertical-align: top;
+}
+.markups-table tbody tr:hover { background: var(--panel-2); }
+
+.markups-swatch {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  border: 1px solid var(--line);
+}
+
+.markups-detail {
+  color: var(--text);
+  word-break: break-word;
+}
+
+.markups-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.markups-count {
+  color: var(--muted);
+  font-size: 12px;
+}

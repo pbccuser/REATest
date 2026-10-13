@@ -3,6 +3,7 @@ import type { Annotation, Point, Tool } from '../types';
 import { newId } from '../types';
 
 interface Props {
+  active: boolean;
   page: number;          // 1-based
   width: number;         // css px of the page canvas
   height: number;
@@ -31,7 +32,7 @@ export default function AnnotationLayer(p: Props) {
   };
 
   const down = (e: React.PointerEvent) => {
-    if (p.tool === 'select') return;
+    if (!p.active || p.tool === 'select') return;
     if (p.tool === 'text') { setTextAt(norm(e)); return; }
     svgRef.current!.setPointerCapture(e.pointerId);
     const pt = norm(e);
@@ -39,12 +40,12 @@ export default function AnnotationLayer(p: Props) {
     if (p.tool === 'pen') {
       setDraft({ id: newId(), page: p.page, type: 'pen', color: p.color, width: p.strokeWidth, points: [pt] });
     } else {
-      setDraft({ id: newId(), page: p.page, type: p.tool, color: p.color, width: p.strokeWidth, x: pt.x, y: pt.y, w: 0, h: 0 });
+      setDraft({ id: newId(), page: p.page, type: p.tool as import('../types').MarkupTool, color: p.color, width: p.strokeWidth, x: pt.x, y: pt.y, w: 0, h: 0 });
     }
   };
 
   const move = (e: React.PointerEvent) => {
-    if (!draft || !start.current) return;
+    if (!p.active || !draft || !start.current) return;
     const pt = norm(e);
     if (draft.type === 'pen') {
       setDraft({ ...draft, points: [...(draft.points ?? []), pt] });
@@ -73,7 +74,7 @@ export default function AnnotationLayer(p: Props) {
   const render = (a: Annotation, selected: boolean) => {
     const sel = selected ? { strokeDasharray: '4 3', stroke: '#6c7cff', strokeWidth: 1.5 } : {};
     const click = p.tool === 'select' ? () => p.onSelect(a.id) : undefined;
-    const pe = p.tool === 'select' ? 'auto' : 'none';
+    const pe = p.active && p.tool === 'select' ? 'auto' : 'none';
     const px = (v: number) => v * p.width, py = (v: number) => v * p.height;
 
     if (a.type === 'highlight') {
@@ -108,7 +109,7 @@ export default function AnnotationLayer(p: Props) {
   return (
     <>
       <svg ref={svgRef} className="anno-layer" width={p.width} height={p.height}
-        style={{ cursor }} onPointerDown={down} onPointerMove={move} onPointerUp={up}
+        style={{ cursor, pointerEvents: p.active ? 'auto' : 'none' }} onPointerDown={down} onPointerMove={move} onPointerUp={up}
         onClick={(e) => { if (p.tool === 'select' && e.target === svgRef.current) p.onSelect(null); }}>
         {p.annotations.map((a) => render(a, a.id === p.selectedId))}
         {draft && render(draft, false)}

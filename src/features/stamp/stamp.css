@@ -1,0 +1,23 @@
+/* Insert Image / Signature overlay. Dark-theme-friendly, matches the
+   annotation layer's accent-dashed selection style. */
+.image-placer {
+  touch-action: none;
+}
+
+.image-placer-rect {
+  position: absolute;
+  border: 1px dashed var(--accent, #6c7cff);
+  background: rgba(108, 124, 255, 0.08);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.image-placer-rect img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  opacity: 0.85;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}

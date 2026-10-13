@@ -31,6 +31,12 @@ and a mature open-source stack rather than on any single vendor's application.
 - Markup is flattened into the PDF on download (and before structural
   edits, so it stays attached to the right pages)
 
+**Phase 4 — Acrobat/Bluebeam feature set** (built in parallel, then combined)
+- **Markups List** — exportable table (CSV) of every annotation
+- **Tool Chest** — save & reuse markup presets (color/stroke/tool), stored locally
+- **Form filling** — detect AcroForm fields, fill them, optionally flatten
+- **Insert image / signature** — place a PNG/JPG on a page and bake it in
+
 ## Roadmap
 
 - **Phase 2 (done)** — annotations: highlight, pen, rectangle, text notes.
@@ -53,6 +59,7 @@ npm run typecheck  # type-check only
 
 - `src/lib/pdfEngine.ts` — all document mutations (pure: bytes in, bytes out).
 - `src/pdfjs.ts` — central PDF.js worker setup.
+- `src/features/*` — self-contained features (markupsList, toolChest, forms, stamp).
 - `src/App.tsx` — holds canonical document bytes; pdf.js re-renders after each
   edit. (PDF.js detaches the buffer it is given, so it always receives a copy.)
 

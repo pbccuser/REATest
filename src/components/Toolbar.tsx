@@ -1,5 +1,7 @@
 import type { Tool } from '../types';
 
+export type RightPanel = 'none' | 'markups' | 'tools' | 'forms';
+
 interface Props {
   hasDoc: boolean;
   page: number;
@@ -10,6 +12,7 @@ interface Props {
   color: string;
   strokeWidth: number;
   canUndo: boolean;
+  rightPanel: RightPanel;
   onOpen: (files: FileList) => void;
   onMerge: (files: FileList) => void;
   onPrev: () => void;
@@ -24,6 +27,8 @@ interface Props {
   onStroke: (w: number) => void;
   onUndo: () => void;
   onClearPage: () => void;
+  onPanel: (panel: RightPanel) => void;
+  onPickImage: (files: FileList) => void;
 }
 
 const TOOLS: { id: Tool; label: string; title: string }[] = [
@@ -36,6 +41,11 @@ const TOOLS: { id: Tool; label: string; title: string }[] = [
 const SWATCHES = ['#e5604d', '#ffeb3b', '#38c172', '#6c7cff', '#111111'];
 
 export default function Toolbar(p: Props) {
+  const panelBtn = (id: 'markups' | 'tools' | 'forms', label: string, title: string) => (
+    <button className={`btn ${p.rightPanel === id ? 'active' : ''}`} disabled={!p.hasDoc}
+      onClick={() => p.onPanel(p.rightPanel === id ? 'none' : id)} title={title}>{label}</button>
+  );
+
   return (
     <header className="toolbar">
       <div className="brand">PDForge</div>
@@ -89,6 +99,15 @@ export default function Toolbar(p: Props) {
       </select>
       <button className="btn" disabled={!p.canUndo} onClick={p.onUndo} title="Undo last annotation">Undo</button>
       <button className="btn" disabled={!p.hasDoc} onClick={p.onClearPage} title="Clear this page's annotations">Clear</button>
+
+      <span className="sep" />
+      <label className={`btn tool ${p.tool === 'image' ? 'active' : ''} ${p.hasDoc ? '' : 'disabled'}`} title="Insert image / signature">🖼
+        <input type="file" accept="image/png,image/jpeg" hidden disabled={!p.hasDoc}
+          onChange={(e) => e.target.files && e.target.files.length && p.onPickImage(e.target.files)} />
+      </label>
+      {panelBtn('markups', 'Markups', 'Markups list')}
+      {panelBtn('tools', 'Tool Chest', 'Saved markup presets')}
+      {panelBtn('forms', 'Forms', 'Fill form fields')}
 
       <span className="spacer" />
       {p.busy && <span className="busy">working…</span>}

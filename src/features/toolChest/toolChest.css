@@ -1,0 +1,141 @@
+/* Tool Chest — dark theme, reuses the app's CSS variables
+   (--panel, --panel-2, --line, --text, --muted, --accent, --danger). */
+
+.toolchest {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  width: 100%;
+}
+
+.toolchest-head {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  font-size: 13px;
+}
+
+.toolchest-save {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.toolchest-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 9px;
+  font-size: 13px;
+}
+
+.toolchest-input::placeholder { color: var(--muted); }
+.toolchest-input:focus { outline: none; border-color: var(--accent); }
+
+.toolchest-btn {
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 11px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.toolchest-btn:hover { border-color: var(--accent); }
+.toolchest-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.toolchest-empty {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.toolchest-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.toolchest-item {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.toolchest-apply {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 7px 9px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.toolchest-apply:hover { border-color: var(--accent); }
+
+.toolchest-swatch {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+}
+
+.toolchest-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.toolchest-label {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toolchest-sub {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+.toolchest-del {
+  flex: none;
+  width: 30px;
+  background: var(--panel-2);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.toolchest-del:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}

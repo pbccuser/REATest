@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
 import type { Annotation, Tool } from '../types';
 import AnnotationLayer from './AnnotationLayer';
+import ImagePlacer from '../features/stamp/ImagePlacer';
 
 interface Props {
   doc: PDFDocumentProxy | null;
@@ -12,8 +13,10 @@ interface Props {
   strokeWidth: number;
   annotations: Annotation[];
   selectedId: string | null;
+  imageDataUrl: string | null;
   onAdd: (a: Annotation) => void;
   onSelect: (id: string | null) => void;
+  onPlaceImage: (rect: { x: number; y: number; w: number; h: number }) => void;
 }
 
 export default function Viewer(p: Props) {
@@ -56,18 +59,27 @@ export default function Viewer(p: Props) {
 
   if (!p.doc) return <div className="viewer empty">Open a PDF to get started.</div>;
 
+  const placingImage = p.tool === 'image' && !!p.imageDataUrl;
+
   return (
     <div className="viewer">
       {error && <div className="error">Could not render page: {error}</div>}
       <div className="page-stack" style={dims ? { width: dims.w, height: dims.h } : undefined}>
         <canvas ref={canvasRef} className="page-canvas" />
         {dims && (
-          <AnnotationLayer
-            page={p.pageNumber} width={dims.w} height={dims.h} scale={p.scale}
-            tool={p.tool} color={p.color} strokeWidth={p.strokeWidth}
-            annotations={p.annotations.filter((a) => a.page === p.pageNumber)}
-            selectedId={p.selectedId} onAdd={p.onAdd} onSelect={p.onSelect}
-          />
+          <>
+            <AnnotationLayer
+              active={p.tool !== 'image'}
+              page={p.pageNumber} width={dims.w} height={dims.h} scale={p.scale}
+              tool={p.tool} color={p.color} strokeWidth={p.strokeWidth}
+              annotations={p.annotations.filter((a) => a.page === p.pageNumber)}
+              selectedId={p.selectedId} onAdd={p.onAdd} onSelect={p.onSelect}
+            />
+            <ImagePlacer
+              active={placingImage} width={dims.w} height={dims.h}
+              imageDataUrl={p.imageDataUrl} onPlace={p.onPlaceImage}
+            />
+          </>
         )}
       </div>
     </div>
