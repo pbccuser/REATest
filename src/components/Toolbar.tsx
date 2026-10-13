@@ -10,6 +10,7 @@ interface Props {
   color: string;
   strokeWidth: number;
   canUndo: boolean;
+  panelOpen: boolean;
   onOpen: (files: FileList) => void;
   onMerge: (files: FileList) => void;
   onPrev: () => void;
@@ -24,6 +25,7 @@ interface Props {
   onStroke: (w: number) => void;
   onUndo: () => void;
   onClearPage: () => void;
+  onTogglePanel: () => void;
 }
 
 const TOOLS: { id: Tool; label: string; title: string }[] = [
@@ -34,6 +36,12 @@ const TOOLS: { id: Tool; label: string; title: string }[] = [
   { id: 'text', label: 'T', title: 'Text note' },
 ];
 const SWATCHES = ['#e5604d', '#ffeb3b', '#38c172', '#6c7cff', '#111111'];
+const MEASURE: { id: Tool; label: string; title: string }[] = [
+  { id: 'calibrate', label: '\u2316', title: 'Calibrate scale (draw a known distance)' },
+  { id: 'length', label: '\u2194', title: 'Length measurement' },
+  { id: 'area', label: '\u25B1', title: 'Area measurement' },
+  { id: 'count', label: '#', title: 'Count' },
+];
 
 export default function Toolbar(p: Props) {
   return (
@@ -89,6 +97,17 @@ export default function Toolbar(p: Props) {
       </select>
       <button className="btn" disabled={!p.canUndo} onClick={p.onUndo} title="Undo last annotation">Undo</button>
       <button className="btn" disabled={!p.hasDoc} onClick={p.onClearPage} title="Clear this page's annotations">Clear</button>
+
+      <span className="sep" />
+      <div className="tools" role="group" aria-label="Measure tools">
+        {MEASURE.map((t) => (
+          <button key={t.id} title={t.title}
+            className={`btn tool ${p.tool === t.id ? 'active' : ''}`}
+            disabled={!p.hasDoc} onClick={() => p.onTool(t.id)}>{t.label}</button>
+        ))}
+      </div>
+      <button className={`btn ${p.panelOpen ? 'active' : ''}`} disabled={!p.hasDoc}
+        onClick={p.onTogglePanel} title="Measurements panel">☰ Takeoff</button>
 
       <span className="spacer" />
       {p.busy && <span className="busy">working…</span>}
