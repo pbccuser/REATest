@@ -15,21 +15,26 @@ and a mature open-source stack rather than on any single vendor's application.
 | Create / edit / manipulate | [pdf-lib](https://pdf-lib.js.org/) |
 | App shell | React + Vite + TypeScript |
 
-## Features (Phase 1)
+## Features
 
+**Phase 1 — view & pages**
 - Open any PDF
 - Page viewer with zoom and keyboard navigation (← / →)
 - Thumbnail sidebar with click-to-jump
-- Rotate a page (left / right)
-- Delete a page
-- Merge one or more PDFs into the current document
-- Extract the current page as its own PDF
+- Rotate, delete, merge, and extract pages
 - Download the edited document
+
+**Phase 2 — annotations & markup**
+- Highlight, freehand pen, rectangle, and text notes
+- Per-tool color swatches (+ custom color) and stroke width
+- Select an annotation and delete it (Del); Undo; Clear page
+- Markup is flattened into the PDF on download (and before structural
+  edits, so it stays attached to the right pages)
 
 ## Roadmap
 
-- **Phase 2** — drag-to-reorder pages, annotations (highlight, draw, notes),
-  form filling, add text/image.
+- **Phase 2 (done)** — annotations: highlight, pen, rectangle, text notes.
+- **Next** — drag-to-reorder pages, form filling, insert image.
 - **Phase 3** — OCR (Tesseract.js), redaction, digital signatures, PDF/A,
   document compare, split-by-range UI.
 - **Fidelity track** — optional MuPDF/PDFium WASM backend for Acrobat-grade

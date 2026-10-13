@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { pdfjsLib } from './pdfjs';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
+import type { Annotation, Tool } from './types';
 import Viewer from './components/Viewer';
 import Thumbnails from './components/Thumbnails';
 import Toolbar from './components/Toolbar';
 import * as engine from './lib/pdfEngine';
+import { applyAnnotations } from './lib/annotate';
 
 export default function App() {
-  // Canonical document bytes (pdf-lib operates on these).
   const bytesRef = useRef<Uint8Array | null>(null);
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null);
   const [page, setPage] = useState(1);
@@ -16,13 +17,17 @@ export default function App() {
   const [busy, setBusy] = useState(false);
   const [name, setName] = useState('document.pdf');
 
-  // (Re)load the pdf.js view from the canonical bytes. pdf.js detaches the
-  // buffer it receives, so always hand it a fresh copy.
+  // Markup state.
+  const [tool, setTool] = useState<Tool>('select');
+  const [color, setColor] = useState('#e5604d');
+  const [strokeWidth, setStroke] = useState(2);
+  const [anns, setAnns] = useState<Annotation[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
   const refresh = useCallback(async (keepPage: number) => {
     const bytes = bytesRef.current;
     if (!bytes) return;
-    const copy = bytes.slice();
-    const loaded = await pdfjsLib.getDocument({ data: copy }).promise;
+    const loaded = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
     setDoc(loaded);
     setTotal(loaded.numPages);
     setPage(Math.min(Math.max(1, keepPage), loaded.numPages));
@@ -48,72 +53,103 @@ export default function App() {
     finally { setBusy(false); }
   };
 
+  // Bake any pending annotations into the bytes before a structural edit, so
+  // they stay attached to the right pages. Returns the (possibly new) bytes.
+  const flatten = async (): Promise<Uint8Array> => {
+    const b = bytesRef.current!;
+    if (anns.length === 0) return b;
+    const baked = await applyAnnotations(b, anns);
+    bytesRef.current = baked;
+    setAnns([]);
+    setSelectedId(null);
+    return baked;
+  };
+
   const onOpen = (files: FileList) => guard(async () => {
     const file = files[0];
     setName(file.name);
+    setAnns([]); setSelectedId(null);
     await setBytes(await readFile(file), 1);
   });
 
   const onMerge = (files: FileList) => guard(async () => {
     if (!bytesRef.current) return;
+    const base = await flatten();
     const additions = await Promise.all(Array.from(files).map(readFile));
-    const merged = await engine.mergeInto(bytesRef.current, additions);
-    await setBytes(merged, page);
+    await setBytes(await engine.mergeInto(base, additions), page);
   });
 
   const onRotate = (delta: number) => guard(async () => {
     if (!bytesRef.current) return;
-    await setBytes(await engine.rotatePage(bytesRef.current, page - 1, delta), page);
+    const base = await flatten();
+    await setBytes(await engine.rotatePage(base, page - 1, delta), page);
   });
 
   const onDelete = () => guard(async () => {
     if (!bytesRef.current) return;
-    await setBytes(await engine.deletePage(bytesRef.current, page - 1), page);
+    const base = await flatten();
+    await setBytes(await engine.deletePage(base, page - 1), page);
   });
 
   const onExtract = () => guard(async () => {
     if (!bytesRef.current) return;
-    const out = await engine.extractRange(bytesRef.current, page - 1, page - 1);
+    const base = await flatten();
+    const out = await engine.extractRange(base, page - 1, page - 1);
     engine.downloadBytes(out, name.replace(/\.pdf$/i, '') + `-p${page}.pdf`);
   });
 
-  const onDownload = () => {
-    if (bytesRef.current) engine.downloadBytes(bytesRef.current, name);
+  const onDownload = () => guard(async () => {
+    if (!bytesRef.current) return;
+    const baked = await applyAnnotations(bytesRef.current, anns);
+    engine.downloadBytes(baked, name);
+  });
+
+  const addAnn = (a: Annotation) => setAnns((prev) => [...prev, a]);
+  const undo = () => setAnns((prev) => prev.slice(0, -1));
+  const clearPage = () => setAnns((prev) => prev.filter((a) => a.page !== page));
+  const deleteSelected = () => {
+    if (!selectedId) return;
+    setAnns((prev) => prev.filter((a) => a.id !== selectedId));
+    setSelectedId(null);
   };
 
-  // Keyboard navigation.
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
+      const typing = (e.target as HTMLElement)?.tagName === 'TEXTAREA' || (e.target as HTMLElement)?.tagName === 'INPUT';
+      if (typing) return;
       if (!doc) return;
-      if (e.key === 'ArrowRight' || e.key === 'PageDown') setPage((p) => Math.min(p + 1, total));
-      if (e.key === 'ArrowLeft' || e.key === 'PageUp') setPage((p) => Math.max(p - 1, 1));
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) { e.preventDefault(); deleteSelected(); return; }
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') setPage((n) => Math.min(n + 1, total));
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') setPage((n) => Math.max(n - 1, 1));
     };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
-  }, [doc, total]);
+  }, [doc, total, selectedId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const annCount = anns.length;
 
   return (
     <div className="app">
       <Toolbar
-        hasDoc={!!doc}
-        page={page}
-        total={total}
-        scale={scale}
-        busy={busy}
-        onOpen={onOpen}
-        onMerge={onMerge}
-        onPrev={() => setPage((p) => Math.max(1, p - 1))}
-        onNext={() => setPage((p) => Math.min(total, p + 1))}
+        hasDoc={!!doc} page={page} total={total} scale={scale} busy={busy}
+        tool={tool} color={color} strokeWidth={strokeWidth} canUndo={annCount > 0}
+        onOpen={onOpen} onMerge={onMerge}
+        onPrev={() => setPage((n) => Math.max(1, n - 1))}
+        onNext={() => setPage((n) => Math.min(total, n + 1))}
         onZoom={(d) => setScale((s) => Math.min(4, Math.max(0.3, +(s + d).toFixed(2))))}
-        onRotate={onRotate}
-        onDelete={onDelete}
-        onExtract={onExtract}
-        onDownload={onDownload}
+        onRotate={onRotate} onDelete={onDelete} onExtract={onExtract} onDownload={onDownload}
+        onTool={(t) => { setTool(t); setSelectedId(null); }}
+        onColor={setColor} onStroke={setStroke} onUndo={undo} onClearPage={clearPage}
       />
       <div className="workspace">
         <Thumbnails doc={doc} current={page} onSelect={setPage} />
         <main className="stage">
-          <Viewer doc={doc} pageNumber={page} scale={scale} />
+          <Viewer
+            doc={doc} pageNumber={page} scale={scale}
+            tool={tool} color={color} strokeWidth={strokeWidth}
+            annotations={anns} selectedId={selectedId}
+            onAdd={addAnn} onSelect={setSelectedId}
+          />
         </main>
       </div>
     </div>

@@ -62,3 +62,22 @@ body {
 .viewer.empty { color: var(--muted); font-size: 15px; }
 .page-canvas { box-shadow: 0 6px 30px rgba(0,0,0,.45); background: #fff; }
 .error { color: var(--danger); margin-bottom: 10px; }
+
+/* --- Phase 2: annotations --- */
+.page-stack { position: relative; box-shadow: 0 6px 30px rgba(0,0,0,.45); }
+.page-stack .page-canvas { box-shadow: none; display: block; }
+.anno-layer { position: absolute; left: 0; top: 0; touch-action: none; }
+.text-input {
+  position: absolute; min-width: 120px; min-height: 1.4em; transform: translateY(-2px);
+  background: rgba(255,255,255,.9); border: 1px dashed #6c7cff; border-radius: 3px;
+  padding: 2px 4px; font-family: Helvetica, Arial, sans-serif; line-height: 1.2; resize: both;
+}
+
+.tools { display: inline-flex; gap: 3px; background: var(--panel-2); padding: 3px; border-radius: 8px; border: 1px solid var(--line); }
+.btn.tool { padding: 5px 9px; min-width: 32px; justify-content: center; }
+.btn.tool.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.swatches { display: inline-flex; gap: 4px; align-items: center; }
+.swatch { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; padding: 0; }
+.swatch.active { border-color: #fff; box-shadow: 0 0 0 2px var(--accent); }
+.swatch.custom { width: 24px; height: 24px; border-radius: 6px; background: none; }
