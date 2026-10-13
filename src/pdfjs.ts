@@ -1,7 +1,10 @@
-// Central pdf.js setup. The worker is loaded as a URL so Vite bundles it.
+// Central pdf.js setup.
+// The worker is imported as an *inline* worker (bundled as a blob), so the app
+// has no external worker file to fetch. This is what lets a single-file build
+// run straight from the filesystem (file://) with no server.
 import * as pdfjsLib from 'pdfjs-dist';
-import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import PdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?worker&inline';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+pdfjsLib.GlobalWorkerOptions.workerPort = new PdfWorker();
 
 export { pdfjsLib };
